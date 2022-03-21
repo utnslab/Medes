@@ -1,0 +1,8 @@
+{
+    "value": {
+        "name": "python-appl1",
+        "main": "main",
+        "binary": false,
+        "code": "import numpy\nimport time\ndef fibonacci(n, mem):\n\tif (n == 0 or n == 1):\n\t\treturn 1\n\tif (mem[n] == -1):\n\t\tmem[n] = fibonacci(n-1, mem) + fibonacci(n-2, mem)\n\treturn mem[n]\n\ndef main(args):\n\tn = int(args.get('fib_n'))\n\tmem = [-1 for i in range(n+1)]\n\tresult = fibonacci(n, mem)\n\tkey = 'Fibonacci of n == ' + str(n)\n\treturn {key: result}"
+    }
+}

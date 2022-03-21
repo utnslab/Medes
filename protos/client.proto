@@ -1,0 +1,31 @@
+syntax = "proto3";
+import "main.proto";
+
+package dedup;
+
+message SpawnArgs {
+  int32 containerId = 1;
+  string environment = 2;
+  string application = 3;
+}
+
+message MemoryResponse {
+  float usedMemory = 1;
+}
+
+service DedupService {
+  // Invoke the application on a host machine to spawn a new container
+  rpc Spawn (SpawnArgs) returns (MemoryResponse);
+
+  // Restore a particular deduplicated container
+  rpc Restore (Container) returns (MemoryResponse);
+
+  // Restart a warm container on the host machine
+  rpc Restart (Container) returns (MemoryResponse);
+
+  // Purge a container on the host machine
+  rpc Purge (Container) returns (MemoryResponse);
+
+  // Terminate execution
+  rpc Terminate (Ack) returns (Ack);
+}

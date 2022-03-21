@@ -1,0 +1,10 @@
+Appl0   math, time      Vanilla Runtime
+Appl1   numpy, time     MatMul, LinPack
+Appl2   numpy, pillow   ImageProcessing
+Appl3   numpy, opencv-python    VideoProcessing
+Appl4   multiprocessing         MapReduce
+Appl5   chameleon, json         HTTP Serving
+Appl6   pyaes, json             Encryption/Decryption
+Appl7   sklearn.TIV, pandas     FeatureGen, LR Prediction
+Appl8   torch.nn                RNN Model Serving
+Appl9   sklearn.TIV, sklearn.LR Model Training

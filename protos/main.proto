@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package dedup;
+
+message Ack {}
+
+message Container {
+  int32 containerId = 1;
+}

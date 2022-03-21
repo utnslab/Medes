@@ -1,0 +1,80 @@
+syntax = "proto3";
+import "main.proto";
+
+package dedup;
+
+message RefcountArgs {
+  int32 containerId = 1;
+  bool increment = 2;
+}
+
+message DecisionResponse {
+  enum Decision {
+    WARM = 0;
+    DEDUP = 1;
+    PURGE = 2;
+    BASE = 3;
+  }
+  Decision decision = 1;
+}
+
+message BaseContainerResponse {
+  message BasePage {
+    int64 addr = 1; /* ID of the page as sent in the ContainerPages argument addr */
+    int32 machineId = 2; /* Machine ID for the base page */
+    int64 mrId = 3; /* Base page memory region ID */
+    int64 baseAddr = 4; /* Base page offset in the memory region */
+  }
+  repeated BasePage basePageList = 1;
+}
+
+message ContainerPages {
+  message HashStruct {
+    repeated string hashes = 1;
+    /* Offset of the page within memory region for Base. Page ID for Dedup. */
+    int64 addr = 2;
+    /* Memory region ID, registered with RDMA. -1 for Dedup */
+    int64 mrId = 3;
+  }
+  int32 containerId = 1;
+  int32 machineId = 2;
+  repeated HashStruct payload = 3;
+}
+
+message StatusArgs {
+  enum Status {
+    DEDUP = 0;
+    BASE = 1;
+    WARM = 2;
+  }
+  int32 containerId = 1;
+  Status status = 2;
+}
+
+message MemoryArgs {
+  int32 machine = 1;
+  float usedMemory = 2;
+}
+
+service Controller {
+  // Invoke the controller to get the decision of a particular container
+  rpc GetDecision (Container) returns (DecisionResponse);
+
+  // Register pages of a container decided as Base Container in previous RPC
+  rpc RegisterPages (ContainerPages) returns (Ack);
+
+  // Evaluate and return the set of base containers for a Dedup Container
+  rpc GetBaseContainers (ContainerPages) returns (BaseContainerResponse);
+
+  // Update container status on the controller
+  rpc UpdateStatus (StatusArgs) returns (Ack);
+
+  // Update the refcount of the specific container
+  rpc UpdateRefcount (RefcountArgs) returns (Ack);
+
+  // Update available memory for the given machine id
+  rpc UpdateAvailableMemory (MemoryArgs) returns (Ack);
+
+  // Blacklist a container for deduplication/checkpointing
+  rpc Blacklist (Container) returns (Ack);
+}
